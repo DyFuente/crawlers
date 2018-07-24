@@ -1,6 +1,12 @@
 
 import bs4 as bs
-from selenium import webdriver  
+from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException  
+import time
+
 browser = webdriver.Chrome("C:/Users/renan/Tutorial/chromedriver.exe")
 
 list_of_channels = ['Canal Brasil',
@@ -26,7 +32,17 @@ url = (list_of_links[0])
 #Open the url with Selenium, since the data that I need is being rendered through Javascript,
 #I have to use Selenium. 
 browser.get(url)
-# get the page_source. 
+xpath = '//*[@id="area-background"]/main/div/div[2]/div[1]/div/ul/div/div/div[8]'
+delay = 3
+try:
+    myElem = WebDriverWait(browser, delay).until(EC.presence_of_element_located((By.XPATH, xpath)))
+    print("Page is ready!")
+except TimeoutException:
+    print("Loading took too much time!")
+# get the page_source.
+myElem.click() 
+
+time.sleep(2)
 html_source = browser.page_source
 # close the browser
 browser.quit()

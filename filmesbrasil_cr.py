@@ -13,6 +13,11 @@ browser = webdriver.Chrome("C:/Users/renan/Tutorial/chromedriver.exe")
 
 browser.maximize_window()
 browser.execute_script("document.body.style.zoom='100'")
+
+
+# use the page source on Beautiful just like if it was done through requests.
+
+
 list_of_channels = ['Canal Brasil',
  'Megapix',
  'Cinemax',
@@ -44,13 +49,25 @@ main_objs = []
 #Using Xpath because I can iterate through the items. 
 class Text():
 
-		def __init__(self, subtitulo, complemento, classificacao,year,origin_country):
+		def __init__(self, time, subtitulo, complemento, classificacao,year,origin_country):
+			self.time = time
 			self.subtitulo = subtitulo
 			self.complemento = complemento
 			self.classificacao = classificacao
 			self.year = year
 			self.origin_country = origin_country
 
+def getObjct():
+	items = soup.find_all('div', class_='episodio')
+	for i in items:
+		b = Text(i.find('span', class_='hora').text.strip(),
+				i.find('h5', class_='subtitulo').text.strip(), 
+				i.find('p', class_='complemento').text.strip(),
+				i.find('span', class_='classificacao').text.strip(),
+				i.find('span', class_='ano').text.strip(),
+				i.find('span', class_='pais').text.strip()
+							)
+		my_text.append(b)
 my_text = []
 for i in range(7,21):
 	number = i
@@ -63,48 +80,36 @@ for i in range(7,21):
 		    print("Page is ready!")
 		except TimeoutException:
 		    print("Loading took too much time!")
-		# get the page_source.
 		myElem.click() 
-
 		time.sleep(2)
+
+		# get the page_source.
 		html_source = browser.page_source
-		# close the browser
-		# use the page source on Beautiful just like if it was done through requests.
 		soup = bs.BeautifulSoup(html_source, "lxml")
+		
 		#Getting information about the movie
-		items = soup.find_all('div', class_='episodio')
-		for i in items:
-			b = Text(i.find('h5', class_='subtitulo').text.strip(), 
-					i.find('p', class_='complemento').text.strip(),
-					i.find('span', class_='classificacao').text.split(),
-					i.find('span', class_='ano').text.split(),
-					i.find('span', class_='pais').text.split()
-								)
-			my_text.append(b)
+		getObjct()
+
 	else:
 		next_button_xpath = '//span[@class="seta proximo"]'
-		_xpath= f"//div[@class='owl-wrapper']//div[{number}]"
 		browser.find_element_by_xpath(next_button_xpath).click()
-		time.sleep(5)
+		_xpath= f"//div[@class='owl-wrapper']//div[{number}]"
+		time.sleep(2)
 		browser.find_element_by_xpath(_xpath).click()
-		html_source = browser.page_source
-		# close the browser
 		# use the page source on Beautiful just like if it was done through requests.
+		html_source = browser.page_source
 		soup = bs.BeautifulSoup(html_source, "lxml")
+		
 		#Getting information about the movie
-		items = soup.find_all('div', class_='episodio')
-		for i in items:
-			b = Text(i.find('h5', class_='subtitulo').text.strip(), 
-					i.find('p', class_='complemento').text.strip(),
-					i.find('span', class_='classificacao').text.split(),
-					i.find('span', class_='ano').text.split(),
-					i.find('span', class_='pais').text.split()
-								)
-			my_text.append(b)
+		getObjct()
+		
+# close the browser
 browser.quit()
 my_file = jsonpickle.encode(my_text)
-
+print(len(my_text))
+''' 
 for i in my_text:
+	print(i.time)
 	print(i.subtitulo)
 	print(i.complemento)
 	print(i.classificacao)
@@ -112,7 +117,7 @@ for i in my_text:
 	print(i.origin_country)
 	print("-------------------------")
 with open('text.json', 'w') as f:
-	json.dump(my_file, f, indent=2, ensure_ascii=False)
+	json.dump(my_file, f, indent=4)
 
 
 #for i, c in enumerate(my_text):
@@ -127,5 +132,5 @@ with open('text.json', 'w') as f:
 
 
 
-
+'''
 

@@ -10,7 +10,7 @@ import json
 
 
 #browser configuration first.  zoom at 100 because the chromedriver has a problem and stets the zoom to 90 fro some reason.
-#Need to especify your own location for the webdriver
+#Need to especify your own location for the WebDriverWait
 browser = webdriver.Chrome("C:/Users/renan/Tutorial/chromedriver.exe")
 #browser.maximize_window()
 browser.execute_script("document.body.style.zoom='100'")

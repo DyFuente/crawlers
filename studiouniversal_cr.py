@@ -1,4 +1,3 @@
-
 import bs4 as bs
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait

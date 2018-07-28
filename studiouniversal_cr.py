@@ -26,48 +26,34 @@ list_of_channels = ['Canal Brasil',
  'Paramount'
  ] 
 
-list_of_links = [ 'http://canalbrasil.globo.com/programacao.html',
-'http://megapix.globo.com/',
-'https://br.cinemax.tv/schedule',
-'http://www.boxbrazil.tv.br/prime-box-brazil-grade-de-programacao/',
-'http://studiouniversal.globo.com/programacao.html',
-'https://www.netcombo.com.br/tv-por-assinatura/programacao/canal/paramount-447'
-]
-
-# Code for Canal Brasil!
-
-# Get the link Canal Brasil
-url = (list_of_links[0])
-#Open the url with Selenium, since the data that I need is being rendered through Javascript,
-#I have to use Selenium. 
-
-
+url = 'http://studiouniversal.globo.com/programacao.html'
 
 browser.get(url)
 
 #Using Xpath because I can iterate through the items. 
 class Text():
 
-		def __init__(self, time, subtitulo, complemento, classificacao,year,origin_country):
+		def __init__(self, time, subtitulo, complemento):
 			self.time = time
 			self.subtitulo = subtitulo
 			self.complemento = complemento
-			self.classificacao = classificacao
-			self.year = year
-			self.origin_country = origin_country
 
+def getItem(item, div, _class):
+	if(item.find(div,class_=_class) == None):
+		return 'Found No Item'	
+	else:
+		return item.find(div,class_=_class).text.strip()
 def getObjct():
 	items = soup.find_all('div', class_='episodio')
-	for i in items:
-		b = Text(i.find('span', class_='hora').text.strip(),
-				i.find('h5', class_='subtitulo').text.strip(), 
-				i.find('p', class_='complemento').text.strip(),
-				i.find('span', class_='classificacao').text.strip(),
-				i.find('span', class_='ano').text.strip(),
-				i.find('span', class_='pais').text.strip()
-							)
-		my_text.append(b)
-my_text = []
+	for i in items:	
+		b = Text(getItem(i,'span', 'hora'),
+				getItem(i,'h5', 'subtitulo'),
+				getItem(i,'p', 'complemento')
+		)
+		my_objects.append(b)
+
+my_objects = []
+
 for i in range(7,21):
 	number = i
 	next_button_xpath = '//span[@class="seta proximo"]//span[@class="icone"]'
@@ -96,6 +82,7 @@ for i in range(7,21):
 		time.sleep(2)
 		browser.find_element_by_xpath(_xpath).click()
 		# use the page source on Beautiful just like if it was done through requests.
+		time.sleep(2)
 		html_source = browser.page_source
 		soup = bs.BeautifulSoup(html_source, "lxml")
 		
@@ -104,16 +91,10 @@ for i in range(7,21):
 		
 # close the browser
 browser.quit()
-my_file = jsonpickle.encode(my_text)
-print(len(my_text))
-''' 
-for i in my_text:
+for i in my_objects:
 	print(i.time)
 	print(i.subtitulo)
 	print(i.complemento)
-	print(i.classificacao)
-	print(i.year)
-	print(i.origin_country)
 	print("-------------------------")
 
 # get class titulo to get either a movie/cinemao @@ whatever da fuck that shit is.
@@ -122,9 +103,3 @@ for i in my_text:
 # get class classificacao for age restriction
 # get class ano for year of the movie
 # get class pais to get the origin of the movie
-
-
-
-
-'''
-

@@ -8,7 +8,7 @@ from calendar import monthrange
 STARTING_DAY = datetime.date.today().day
 MONTH = datetime.date.today().month
 NEXTMONTH = MONTH+1
-MAXDAYS = 26
+MAXDAYS = 30
 INITIALCOUNT = 1
 def scrap_by_month(day,month,count):
 	max_days = monthrange(2018, month)[1]

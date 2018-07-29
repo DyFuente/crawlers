@@ -15,20 +15,24 @@ browser = webdriver.Chrome("C:/Users/renan/Tutorial/chromedriver.exe")
 #browser.maximize_window()
 browser.execute_script("document.body.style.zoom='100'")
 
-url = 'http://megapix.globo.com/programacao/'
+url = 'http://telecine.globo.com/programacao/'
 
 browser.get(url)
 
 
 def getContent():
 	soup = get_source()
-	grade_horas = soup.find_all('li', class_='grade-hora')
+	grade_horas = soup.find_all('section', class_='grade-hora')
 	for i in grade_horas:
 		horario_grade =	i.find('span',class_='horario-grade').text.strip()
-		img_src = i.find('img').get('src')
-		titulo = i.find('h3', class_="titulo cl").text.strip()
+		titulo = i.find('strong', class_="titulofilme").text.strip()
 		sinopse = i.find('p', class_="sinopse").text.strip()
-		obj = Movie(horario_grade,img_src,titulo,sinopse)
+		channel = i.find('img').get('title').strip()
+		obj = {}
+		obj['channel'] = channel
+		obj['horario-grade'] = horario_grade
+		obj['titulo'] = titulo
+		obj['sinopse'] = sinopse
 		list_of_movies.append(obj)
 
 def get_len_menu():
@@ -40,24 +44,17 @@ def get_source():
 	html_source = browser.page_source
 	soup = bs.BeautifulSoup(html_source,'lxml')
 	return soup
+
 def click_next():
-	#soup = get_source()		
 	menu = browser.find_element_by_class_name(f'jcarousel-item-{i}-horizontal')
 	menu.click()
-#00048381112
 
 list_of_movies = []
-
-class Movie():
-
-		def __init__(self, time, img_src, titulo_cl, sinopse):
-			self.time = time
-			self.img_src = img_src
-			self.titulo_cl = titulo_cl
-			self.sinopse = sinopse
 
 for i in range(31,get_len_menu()+1):
 	click_next()	
 	time.sleep(2)
 	getContent()
 
+with open('telecine_info.json', 'w') as f:  
+    json.dump(list_of_movies, f)

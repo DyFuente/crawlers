@@ -7,21 +7,24 @@ from calendar import monthrange
 
 STARTING_DAY = datetime.date.today().day
 MONTH = datetime.date.today().month
-def scrap_by_month(day,month):
+NEXTMONTH = MONTH+1
+MAXDAYS = 26
+INITIALCOUNT = 1
+def scrap_by_month(day,month,count):
 	max_days = monthrange(2018, month)[1]
+	count = count
 	for i in range(day, max_days+2):
-		if(i == 26 and month == 8):
+		print(count)
+		if(count == MAXDAYS):
 			break
-		elif (i == max_days+1 and month == 7):
-			scrap_by_month(1,8)
+		elif (i == max_days+1):
+			scrap_by_month(1,month+1,count)
 		else:	
 			scrap_that(i, month)
+			count = count + 1
 
 		
 def scrap_that(day,month):
-	print(day)
-	print(month)
-	print('-----------------')
 	url_template = f'https://br.hbomax.tv/ajax.programacion-canal.html?pid=4&cul=pt&oid=4&fecha={month}/{day}/2018'
 	data = requests.get(url_template).text
 	soup = BeautifulSoup(data,'lxml')
@@ -46,10 +49,7 @@ def scrap_that(day,month):
 				break
 list_of_stuff=[]
 
-scrap_by_month(STARTING_DAY,MONTH)
-
-print(list_of_stuff[-1]['day'])
-print(list_of_stuff[-1]['month'])
+scrap_by_month(STARTING_DAY,MONTH,INITIALCOUNT)
 
 with open('hbos_info.json', 'w') as f:  
     json.dump(list_of_stuff, f)
